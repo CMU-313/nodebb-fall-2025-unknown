@@ -102,6 +102,14 @@ define('forum/topic/postTools', [
 		const postContainer = components.get('topic');
 
 		handleSelectionTooltip();
+		
+		postContainer.on('click', '[component="post/unendorse"]', function () {
+			return endorsePost($(this), getData($(this), 'data-pid'));
+		});
+
+		postContainer.on('click', '[component="post/endorse"]', function () {
+			return unEndorsePost($(this), getData($(this), 'data-pid'));
+		});
 
 		postContainer.on('click', '[component="post/quote"]', function () {
 			onQuoteClicked($(this), tid);
@@ -381,6 +389,42 @@ define('forum/topic/postTools', [
 			}
 			const type = method === 'put' ? 'bookmark' : 'unbookmark';
 			hooks.fire(`action:post.${type}`, { pid: pid });
+		});
+		return false;
+	}
+
+	function endorsePost(button, pid) {
+		const isEndorsed = button.attr('posts-endorsed') === 'true';
+		
+		if (isEndorsed) {
+			// alreayd endorsed, return
+			return false;
+		}
+		
+		// call API with PUT method, TODO : create API route for endorse
+		api.put(`/posts/${encodeURIComponent(pid)}/endorse`, undefined, function (err) {
+			if (err) {
+				return alerts.error(err);
+			}
+			// success : hooks.fire()?
+		});
+		return false;
+	}
+
+	function unEndorsePost(button, pid) {
+		const isEndorsed = button.attr('posts-endorsed') === 'true';
+		
+		if (!isEndorsed) {
+			// alreayd un-endorsed, return
+			return false;
+		}
+		
+		// call API with DEL method, TODO : create API route for unendorse
+		api.del(`/posts/${encodeURIComponent(pid)}/unendorse`, undefined, function (err) {
+			if (err) {
+				return alerts.error(err);
+			}
+			// success : hooks.fire()?
 		});
 		return false;
 	}
