@@ -65,4 +65,12 @@ module.exports = function (Posts) {
 		}
 		return await db.isSetMember(`pid:${pid}:users_endorsed`, uid);
 	};
+
+	Posts.getEndorsers = async function (pid) {
+		return await db.getSetMembers(`pid:${pid}:users_endorsed`);
+	};
+
+	Posts.getEndorsersCount = async function (pid) {
+		return await db.setCount(`pid:${pid}:users_endorsed`);
+	};
 };
