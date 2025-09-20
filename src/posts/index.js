@@ -128,10 +128,7 @@ Posts.getPostsByTimeRange = async function (uid, startTime, endTime, start, stop
 	if (startTime >= endTime) {
 		throw new Error('[[error:invalid-time-range]]');
 	}
-	
-	start = parseInt(start, 10) || 0;
-	stop = parseInt(stop, 10) || 20;
-	
+		
 	let set;
 	if (cid && cid !== -1) {
 		set = `cid:${cid}:pids`;
