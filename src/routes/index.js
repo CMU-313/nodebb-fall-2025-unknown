@@ -16,6 +16,9 @@ const helpers = require('./helpers');
 
 const { setupPageRoute } = helpers;
 
+// Add this require with the other route modules
+const filterRoute = require('./filter');
+
 const _mounts = {
 	user: require('./user'),
 	meta: require('./meta'),
@@ -155,6 +158,9 @@ function addCoreRoutes(app, router, middleware, mounts) {
 	_mounts.meta(router, middleware, controllers);
 	_mounts.api(router, middleware, controllers);
 	_mounts.feed(router, middleware, controllers);
+
+	// Mount the new filter route here (right after feed)
+    filterRoute.init(router, middleware, controllers);
 
 	_mounts.activitypub(router, middleware, controllers);
 	_mounts.main(router, middleware, controllers);

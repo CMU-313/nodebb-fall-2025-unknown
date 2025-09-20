@@ -1,0 +1,17 @@
+<div class="container">
+    <h1>Filter</h1>
+
+    <div component="filter" id="filter-root">
+        <p>Apply filters to browse topics by date.</p>
+
+        <div class="mb-2">
+            <input type="date" id="filter-start" class="form-control" />
+        </div>
+        <div class="mb-2">
+            <input type="date" id="filter-end" class="form-control" />
+        </div>
+        <button id="filter-apply" class="btn btn-primary">Apply</button>
+
+        <div id="filter-results" class="mt-3"></div>
+    </div>
+</div>
