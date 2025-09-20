@@ -394,10 +394,8 @@ define('forum/topic/postTools', [
 	}
 
 	function endorsePost(button, pid) {
-		const isEndorsed = button.attr('posts-endorsed') === 'true';
-		console.log(isEndorsed + ' isEndorsed');
 		const method = button.attr('posts-endorsed') === 'false' ? 'put' : 'del';
-		console.log(method);
+		
 		api[method](`/posts/${encodeURIComponent(pid)}/endorse`, undefined, function (err) {
 			if (err) {
 				return alerts.error(err);
