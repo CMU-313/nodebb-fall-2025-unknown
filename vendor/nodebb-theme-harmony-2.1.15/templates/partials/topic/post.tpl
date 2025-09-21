@@ -111,19 +111,8 @@
 				<div component="post/actions" class="d-flex flex-grow-1 align-items-center justify-content-end gap-1 post-tools">
 					<!-- IMPORT partials/topic/reactions.tpl -->
 					<!-- TODO : replace 'post-endorsed' attr variable after post field created -->
-					{{{ if privileges.isAdminOrMod }}}
-						{{{ if posts.endorsed }}}
-							<!-- Show unendorse button when post is already endorsed -->
-							<a component="post/unendorse" href="#" class="btn btn-ghost btn-sm" title="Un-endorse this post" posts-endorsed="{posts.endorsed}">
-								<i class="fa fa-fw fa-star-o text-primary"></i>
-							</a>
-						{{{ else }}}
-							<!-- Show endorse button when post is not endorsed -->
-							<a component="post/endorse" href="#" class="btn btn-ghost btn-sm" title="Endorse this post" posts-endorsed="{posts.endorsed}">
-								<i class="fa fa-fw fa-star text-primary"></i>
-							</a>
-						{{{ end }}}
-					{{{ end }}}
+					<a component="post/unendorse" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.isAdminOrMod }}}hidden{{{ end }}}" title="Un-endorse this post" posts-endorsed="{posts.endorsed}"><i class="fa fa-fw fa-star-o text-primary"></i></a>
+					<a component="post/endorse" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.isAdminOrMod }}}hidden{{{ end }}}" title="Endorse this post" posts-endorsed="{posts.endorsed}"><i class="fa fa-fw fa-star text-primary"></i></a>
 					<a component="post/reply" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:reply]]"><i class="fa fa-fw fa-reply text-primary"></i></a>
 					<a component="post/quote" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:quote]]"><i class="fa fa-fw fa-quote-right text-primary"></i></a>
 
