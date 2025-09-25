@@ -7,53 +7,53 @@ const filterController = {};
 
 // Controller: render filter page
 filterController.render = async function (req, res) {
-    const { start, end } = req.query;
-    let topicsData = [];
+	const { start, end } = req.query;
+	let topicsData = [];
 
-    if (start || end) {
-        const startTs = start ? Date.parse(start) : 0;
-        const endTs = end ? Date.parse(end) : Date.now();
+	if (start || end) {
+		const startTs = start ? Date.parse(start) : 0;
+		const endTs = end ? Date.parse(end) : Date.now();
 
-        // Get topic IDs in date range from Redis sorted set
-        const tids = await db.getSortedSetRangeByScore(
-            'topics:tid',
-            0, 49,           // pagination: first 50 results
-            startTs, endTs
-        );
+		// Get topic IDs in date range from Redis sorted set
+		const tids = await db.getSortedSetRangeByScore(
+			'topics:tid',
+			0, 49, // pagination: first 50 results
+			startTs, endTs
+		);
 
-        if (tids.length) {
-            topicsData = await topics.getTopics(tids, req.uid);
-        }
-    }
+		if (tids.length) {
+			topicsData = await topics.getTopics(tids, req.uid);
+		}
+	}
 
-    res.render('filter', {
-        topics: topicsData,
-        start,
-        end,
-    });
+	res.render('filter', {
+		topics: topicsData,
+		start,
+		end,
+	});
 };
 
 // (optional) API version for AJAX calls
 filterController.api = async function (req, res) {
-    const { start, end } = req.query;
-    let topicsData = [];
+	const { start, end } = req.query;
+	let topicsData = [];
 
-    if (start || end) {
-        const startTs = start ? Date.parse(start) : 0;
-        const endTs = end ? Date.parse(end) : Date.now();
+	if (start || end) {
+		const startTs = start ? Date.parse(start) : 0;
+		const endTs = end ? Date.parse(end) : Date.now();
 
-        const tids = await db.getSortedSetRangeByScore(
-            'topics:tid',
-            0, 49,
-            startTs, endTs
-        );
+		const tids = await db.getSortedSetRangeByScore(
+			'topics:tid',
+			0, 49,
+			startTs, endTs
+		);
 
-        if (tids.length) {
-            topicsData = await topics.getTopics(tids, req.uid);
-        }
-    }
+		if (tids.length) {
+			topicsData = await topics.getTopics(tids, req.uid);
+		}
+	}
 
-    res.json({ topics: topicsData });
+	res.json({ topics: topicsData });
 };
 
 module.exports = filterController;

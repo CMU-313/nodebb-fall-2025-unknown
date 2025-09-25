@@ -1,28 +1,28 @@
 'use strict';
 
 define('forum/filter', [], function () {
-    const page = {};
+	const page = {};
 
-    page.init = function () {
-        app.enterRoom('filter');
+	page.init = function () {
+		app.enterRoom('filter');
 
-        const $root = $('[component="filter"]');
-        if (!$root.length) {
-            return;
-        }
+		const $root = $('[component="filter"]');
+		if (!$root.length) {
+			return;
+		}
 
-        $root.find('#filter-apply').on('click', function () {
-            const start = $root.find('#filter-start').val();
-            const end = $root.find('#filter-end').val();
+		$root.find('#filter-apply').on('click', function () {
+			const start = $root.find('#filter-start').val();
+			const end = $root.find('#filter-end').val();
 
-            const qs = [];
-            if (start) qs.push('start=' + encodeURIComponent(start));
-            if (end) qs.push('end=' + encodeURIComponent(end));
-            const query = qs.length ? ('?' + qs.join('&')) : '';
+			const qs = [];
+			if (start) qs.push('start=' + encodeURIComponent(start));
+			if (end) qs.push('end=' + encodeURIComponent(end));
+			const query = qs.length ? ('?' + qs.join('&')) : '';
 
-            ajaxify.go('/filter' + query);
-        });
-    };
+			ajaxify.go('/filter' + query);
+		});
+	};
 
-    return page;
+	return page;
 });

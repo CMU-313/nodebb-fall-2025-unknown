@@ -160,7 +160,7 @@ function addCoreRoutes(app, router, middleware, mounts) {
 	_mounts.feed(router, middleware, controllers);
 
 	// Mount the new filter route here (right after feed)
-    filterRoute.init(router, middleware, controllers);
+	filterRoute.init(router, middleware, controllers);
 
 	_mounts.activitypub(router, middleware, controllers);
 	_mounts.main(router, middleware, controllers);
