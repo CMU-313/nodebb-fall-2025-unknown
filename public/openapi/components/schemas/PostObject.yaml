@@ -184,11 +184,6 @@ PostDataObject:
           type: number
         bookmarks:
           type: number
-        endorsements:
-          type: number
-        endorsed:
-          type: boolean
-          description: Whether the post has been endorsed (endorsements > 0)
         deleterUid:
           type: number
         edited:
