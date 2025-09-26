@@ -12,8 +12,8 @@ define('forum/filter', [], function () {
 		}
 
 		$root.find('#filter-apply').on('click', function () {
-			const start = $root.find('#filter-start').val();
-			const end = $root.find('#filter-end').val();
+			//const start = $root.find('#filter-start').val();
+			//const end = $root.find('#filter-end').val();
 
 		});
 	};
