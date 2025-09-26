@@ -15,12 +15,6 @@ define('forum/filter', [], function () {
 			const start = $root.find('#filter-start').val();
 			const end = $root.find('#filter-end').val();
 
-			const qs = [];
-			if (start) qs.push('start=' + encodeURIComponent(start));
-			if (end) qs.push('end=' + encodeURIComponent(end));
-			const query = qs.length ? ('?' + qs.join('&')) : '';
-
-			ajaxify.go('/filter' + query);
 		});
 	};
 
