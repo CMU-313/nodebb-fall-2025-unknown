@@ -105,4 +105,44 @@ Posts.modifyPostByPrivilege = function (post, privileges) {
 	}
 };
 
+Posts.getPostsByTimeRange = async function (uid, startTime, endTime, start, stop, cid) {
+	const parseTime = (time) => {
+		if (utils.isNumber(time)) {
+			return time;
+		}
+		if (typeof time === 'string') {
+			const parsed = new Date(time);
+			if (isNaN(parsed.getTime())) {
+				throw new Error('[[error:invalid-date-format]]');
+			}
+			return parsed.getTime();
+		}
+		if (time instanceof Date) {
+			return time.getTime();
+		}
+		throw new Error('[[error:invalid-time-format]]');
+	};
+	
+	startTime = parseTime(startTime);
+	endTime = parseTime(endTime);
+	
+	if (startTime >= endTime) {
+		throw new Error('[[error:invalid-time-range]]');
+	}
+		
+	let set;
+	if (cid && cid !== -1) {
+		set = `cid:${cid}:pids`;
+	} else {
+		set = 'posts:pid';
+	}
+	
+	const count = stop - start + 1;
+	let pids = await db.getSortedSetRevRangeByScore(set, start, count, endTime, startTime);
+	
+	pids = await privileges.posts.filter('topics:read', pids, uid);
+	
+	return await Posts.getPostSummaryByPids(pids, uid, { stripTags: true });
+};
+
 require('../promisify')(Posts);
