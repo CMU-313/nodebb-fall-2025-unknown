@@ -40,9 +40,6 @@ define('forum/topic/events', [
 		'posts.bookmark': togglePostBookmark,
 		'posts.unbookmark': togglePostBookmark,
 
-		'posts.endorse': togglePostEndorse,
-		'posts.unendorse': togglePostEndorse,
-
 		'posts.upvote': togglePostVote,
 		'posts.downvote': togglePostVote,
 		'posts.unvote': togglePostVote,
@@ -243,25 +240,6 @@ define('forum/topic/events', [
 
 		el.find('[component="post/bookmark/on"]').toggleClass('hidden', !data.isBookmarked);
 		el.find('[component="post/bookmark/off"]').toggleClass('hidden', data.isBookmarked);
-	}
-
-	function togglePostEndorse(data) {
-		console.log('Toggling endorsement', data);
-
-		const el = $('[data-pid="' + data.post.pid + '"]');
-		if (!el.length) {
-			return;
-		}
-
-		el.find('[component="post/unendorse"]')
-			.toggleClass('hidden', !data.isEndorsed)
-			.attr('posts-endorsed', data.isEndorsed);
-		el.find('[component="post/endorse"]')
-			.toggleClass('hidden', data.isEndorsed)
-			.attr('posts-endorsed', data.isEndorsed);
-
-		const endorsedIndicator = el.find('.endorsed.post-indicator');
-		endorsedIndicator.toggleClass('hidden', !data.isEndorsed);
 	}
 
 	function togglePostVote(data) {
