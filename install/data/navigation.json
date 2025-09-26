@@ -73,5 +73,13 @@
 		"textClass": "d-lg-none",
 		"text": "[[global:header.admin]]",
 		"groups": ["administrators"]
-	}
+	},
+	{
+        "route": "/filter",
+        "title": "Filter",
+        "enabled": true,
+        "iconClass": "fa-filter",
+        "textClass": "d-lg-none",
+        "text": "Filter"
+    }
 ]
