@@ -16,6 +16,8 @@ const helpers = require('./helpers');
 
 const { setupPageRoute } = helpers;
 
+const filterRoute = require('./filter');
+
 const _mounts = {
 	user: require('./user'),
 	meta: require('./meta'),
@@ -155,6 +157,8 @@ function addCoreRoutes(app, router, middleware, mounts) {
 	_mounts.meta(router, middleware, controllers);
 	_mounts.api(router, middleware, controllers);
 	_mounts.feed(router, middleware, controllers);
+
+	filterRoute.init(router, middleware, controllers);
 
 	_mounts.activitypub(router, middleware, controllers);
 	_mounts.main(router, middleware, controllers);
