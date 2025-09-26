@@ -22,7 +22,7 @@ module.exports = function (Topics) {
 
 		const [tagTids, searchTids] = await Promise.all([
 			getTidsWithSameTags(tid, tags.map(t => t.value), cutoff),
-			getSearchTids(tid, {'title': title, 'cid': cid}, cutoff),
+			getSearchTids(tid, title, cid, cutoff),
 		]);
 
 		tids = _.uniq(tagTids.concat(searchTids));
@@ -51,12 +51,12 @@ module.exports = function (Topics) {
 		return _.shuffle(_.uniq(tids)).slice(0, 10);
 	}
 
-	async function getSearchTids(tid, info, cutoff) {
+	async function getSearchTids(tid, title, cid, cutoff) {
 		let { ids: tids } = await plugins.hooks.fire('filter:search.query', {
 			index: 'topic',
-			content: info['title'],
+			content: title,
 			matchWords: 'any',
-			cid: [info['cid']],
+			cid: [cid],
 			limit: 20,
 			ids: [],
 		});
