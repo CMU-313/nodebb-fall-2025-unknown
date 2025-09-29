@@ -14,6 +14,7 @@
 				<!-- IMPORT partials/topic-filters.tpl -->
 				<!-- IMPORT partials/category/filter-dropdown-left.tpl -->
 				<!-- IMPORT partials/tags/filter-dropdown-left.tpl -->
+				<!-- IMPORT partials/topic-search-bar.tpl -->
 				{{{ end }}}
 				{{{ if template.unread }}}
 				<div class="markread btn-group {{{ if !topics.length }}}hidden{{{ end }}}">
