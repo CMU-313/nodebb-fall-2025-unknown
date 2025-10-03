@@ -145,6 +145,4 @@ Posts.getPostsByTimeRange = async function (uid, startTime, endTime, start, stop
 	return await Posts.getPostSummaryByPids(pids, uid, { stripTags: true });
 };
 
-
-
 require('../promisify')(Posts);
