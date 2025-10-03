@@ -145,64 +145,6 @@ Posts.getPostsByTimeRange = async function (uid, startTime, endTime, start, stop
 	return await Posts.getPostSummaryByPids(pids, uid, { stripTags: true });
 };
 
-// created using Claude Sonnet 4
-Posts.getPostsByTitleKeywords = async function (uid, keywords, start, stop) {
-	if (!keywords) {
-		throw new Error('[[error:invalid-keyword]]');
-	}
-	
-	// Handle both string and array inputs
-	let keywordArray;
-	if (typeof keywords === 'string') {
-		keywordArray = keywords.split(/\s+/).map(k => k.trim()).filter(k => k.length > 0);
-	} else if (Array.isArray(keywords)) {
-		keywordArray = keywords.map(k => String(k).trim()).filter(k => k.length > 0);
-	} else {
-		throw new Error('[[error:invalid-keyword]]');
-	}
-	
-	if (!keywordArray.length) {
-		throw new Error('[[error:invalid-keyword]]');
-	}
-	
-	let pids = await db.getSortedSetRevRange('posts:pid', start, stop);
-	pids = await privileges.posts.filter('topics:read', pids, uid);
-	
-	if (!pids.length) {
-		return [];
-	}
-	
-	const postsData = await Posts.getPostsFields(pids, ['tid', 'pid']);
-	const tids = _.uniq(postsData.map(post => post.tid).filter(Boolean));
-	
-	if (!tids.length) {
-		return [];
-	}
-	
-	const topics = require('../topics');
-	const topicsData = await topics.getTopicsFields(tids, ['tid', 'title']);
-	
-	const tidToTitle = {};
-	topicsData.forEach((topic) => {
-		if (topic && topic.tid && topic.title) {
-			tidToTitle[topic.tid] = topic.title.toLowerCase();
-		}
-	});
-	
-	const keywordsLower = keywordArray.map(k => k.toLowerCase());
-	const matchedPids = [];
-	
-	for (const post of postsData) {
-		if (post && post.tid && tidToTitle[post.tid]) {
-			const title = tidToTitle[post.tid];
-			// Check if any of the keywords appears in the title
-			if (keywordsLower.some(keyword => title.includes(keyword))) {
-				matchedPids.push(post.pid);
-			}
-		}
-	}
-	
-	return await Posts.getPostSummaryByPids(matchedPids, uid, { stripTags: true });
-};
+
 
 require('../promisify')(Posts);
