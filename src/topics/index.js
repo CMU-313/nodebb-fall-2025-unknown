@@ -364,10 +364,10 @@ function calculateEditDistance(a, b) {
 	return matrix[b.length][a.length];
 }
 
-const EDIT_DISTANCE_PERCENT_ALLOWED = 0.2;
-
 // Created using Clause Sonnet 4
-Topics.getTopicsByTitleKeywords = async function (uid, keywords, start, stop, fuzzy = false) {
+Topics.getTopicsByTitleKeywords = async function (
+	uid, keywords, start, stop, fuzzy = false, editDistancePercentAllowed = 0.2
+) {
 	if (!keywords) {
 		throw new Error('[[error:invalid-keyword]]');
 	}
@@ -404,7 +404,7 @@ Topics.getTopicsByTitleKeywords = async function (uid, keywords, start, stop, fu
 			const fuzzyMatchFunction = (keyword) => {
 				for (let i = 0; i <= title.length - keyword.length; i++) {
 					const substring = title.substring(i, i + keyword.length);
-					if (calculateEditDistance(substring, keyword) <= Math.floor(keyword.length * EDIT_DISTANCE_PERCENT_ALLOWED)) {
+					if (calculateEditDistance(substring, keyword) <= Math.floor(keyword.length * editDistancePercentAllowed)) {
 						return true;
 					}
 				}
