@@ -126,7 +126,7 @@ Posts.getPostsByTimeRange = async function (uid, startTime, endTime, start, stop
 	startTime = parseTime(startTime);
 	endTime = parseTime(endTime);
 	
-	if (startTime >= endTime) {
+	if (startTime > endTime) {
 		throw new Error('[[error:invalid-time-range]]');
 	}
 		

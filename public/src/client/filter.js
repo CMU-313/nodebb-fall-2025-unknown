@@ -11,10 +11,115 @@ define('forum/filter', [], function () {
 			return;
 		}
 
-		$root.find('#filter-apply').on('click', function () {
-			//const start = $root.find('#filter-start').val();
-			//const end = $root.find('#filter-end').val();
+		function showError(message) {
+			console.log('Showing error:', message);
+			console.log('$root element:', $root);
+			console.log('#filter-results element:', $root.find('#filter-results'));
+			
+			app.alertError(message);
+			$root.find('#filter-results').html('<div class="alert alert-danger">' + message + '</div>');
+			
+			console.log('Error HTML set. Current content:', $root.find('#filter-results').html());
+		}
 
+		function runFilter() {
+			const start = $root.find('#filter-start').val();
+			const end = $root.find('#filter-end').val();
+
+			console.log('Filter values:', { start, end });
+
+			if (!start || !end) {
+				console.log('Missing dates');
+				showError('Please select both start and end dates.');
+				return;
+			}
+
+			const startDate = new Date(start + 'T00:00:00');
+			const endDate = new Date(end + 'T23:59:59'); 
+			
+			console.log('Parsed dates:', { 
+				start, 
+				end, 
+				startDate, 
+				endDate, 
+				startTime: startDate.getTime(), 
+				endTime: endDate.getTime(),
+				isValidStart: !isNaN(startDate.getTime()),
+				isValidEnd: !isNaN(endDate.getTime()),
+			});
+			
+			if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+				console.log('Invalid date format');
+				showError('Please select valid dates.');
+				return;
+			}
+			
+			if (startDate >= endDate) {
+				console.log('Invalid date range - start >= end');
+				showError('The start date must be before the end date.');
+				return;
+			}
+
+			const params = {
+				start: start,
+				end: end,
+				startIndex: 0,
+				stopIndex: 19,
+			};
+
+			const url = `${config.relative_path}/api/filter/posts`;
+			$root.find('#filter-results').html('<p>Loading…</p>');
+
+			$.ajax({
+				url: url,
+				method: 'GET',
+				data: params,
+				timeout: 10000, 
+			})
+				.done((resp) => {
+					const topics = Array.isArray(resp.topics) ? resp.topics : [];
+					if (!topics.length) {
+						$root.find('#filter-results').html('<div class="alert alert-info">No topics found in that range.</div>');
+						return;
+					}
+					app.parseAndTranslate('partials/topics_list', { topics: topics, nextStart: 0 })
+						.then((html) => {
+							$root.find('#filter-results').html(html);
+						})
+						.catch((err) => {
+							console.error('Template rendering error:', err);
+							showError('Failed to render results.');
+						});
+				})
+				.fail((xhr) => {
+					console.error('API request failed:', xhr);
+					let errorMsg = 'Failed to load posts.';
+					
+					if (xhr.statusText === 'timeout') {
+						errorMsg = 'Request timed out. Please try again.';
+					}
+					else if (xhr.status === 400 && xhr.responseJSON && xhr.responseJSON.error) {
+						errorMsg = xhr.responseJSON.error;
+					} else if (xhr.status === 500) {
+						errorMsg = 'Server error occurred. Please try again.';
+					} else if (xhr.status === 0) {
+						errorMsg = 'Network error. Please check your connection.';
+					}
+					
+					showError(errorMsg);
+				})
+				.always(() => {
+					console.log('API request completed');
+				});
+		}
+
+		$root.find('#filter-apply').on('click', runFilter);
+
+		$root.find('#filter-start, #filter-end').on('keypress', function (e) {
+			if (e.which === 13) { 
+				e.preventDefault();
+				runFilter();
+			}
 		});
 	};
 
