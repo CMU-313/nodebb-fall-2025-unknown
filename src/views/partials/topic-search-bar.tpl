@@ -12,5 +12,12 @@
 		<button class="btn btn-outline" type="button" component="topic/search/clear">
 			<i class="fa fa-times"></i>
 		</button>
+	<button 
+		class="btn btn-outline" 
+		type="button" 
+		component="topic/toggle" 
+		data-selected="{toggleSelected}">
+		Fuzzy Search
+	</button>
 	</div>
 </div>
