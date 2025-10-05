@@ -220,3 +220,29 @@ Topics.move = async (req, res) => {
 
 	helpers.formatApiResponse(200, res);
 };
+
+// route taken from API call, return result from Topics.getTopicsByTitleKeywords back to API
+Topics.searchByTitle = async (req, res) => {
+	console.log('=== Topics.searchByTitle CONTROLLER CALLED ===');
+	console.log('Topics.searchByTitle called with:', req.query);
+	try {
+		const { keywords, start = 0, stop = 20 } = req.query;
+		
+		if (!keywords) {
+			console.log('No keywords provided');
+			return helpers.formatApiResponse(400, res, new Error('[[error:invalid-keyword]]'));
+		}
+		
+		console.log('Searching for keywords:', keywords);
+		
+		// Using acee3 topic filter by title function
+		const results = await topics.getTopicsByTitleKeywords(req.uid, keywords, parseInt(start), parseInt(stop));
+		
+		console.log('Search results:', results.length, 'topics found');
+		
+		helpers.formatApiResponse(200, res, { topics: results });
+	} catch (error) {
+		console.error('Search error:', error);
+		helpers.formatApiResponse(500, res, error);
+	}
+};
