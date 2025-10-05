@@ -330,4 +330,49 @@ Topics.search = async function (tid, term) {
 	return Array.isArray(result) ? result : result.ids;
 };
 
+// Created using Clause Sonnet 4
+Topics.getTopicsByTitleKeywords = async function (uid, keywords, start, stop) {
+	if (!keywords) {
+		throw new Error('[[error:invalid-keyword]]');
+	}
+	
+	// Handle both string and array inputs
+	let keywordArray;
+	if (typeof keywords === 'string') {
+		keywordArray = keywords.split(/\s+/).map(k => k.trim()).filter(k => k.length > 0);
+	} else if (Array.isArray(keywords)) {
+		keywordArray = keywords.map(k => String(k).trim()).filter(k => k.length > 0);
+	} else {
+		throw new Error('[[error:invalid-keyword]]');
+	}
+	
+	if (!keywordArray.length) {
+		throw new Error('[[error:invalid-keyword]]');
+	}
+	
+	let tids = await db.getSortedSetRevRange('topics:tid', start, stop);
+	tids = await privileges.topics.filterTids('topics:read', tids, uid);
+	
+	if (!tids.length) {
+		return [];
+	}
+	
+	const topicsData = await Topics.getTopicsFields(tids, ['tid', 'title']);
+	
+	const keywordsLower = keywordArray.map(k => k.toLowerCase());
+	const matchedTids = [];
+	
+	for (const topic of topicsData) {
+		if (topic && topic.tid && topic.title) {
+			const title = topic.title.toLowerCase();
+			// Check if any of the keywords appears in the title
+			if (keywordsLower.some(keyword => title.includes(keyword))) {
+				matchedTids.push(topic.tid);
+			}
+		}
+	}
+	
+	return await Topics.getTopicsByTids(matchedTids, uid);
+};
+
 require('../promisify')(Topics);
