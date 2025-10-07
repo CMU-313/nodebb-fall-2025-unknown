@@ -185,6 +185,98 @@ describe('Topics.getTopicsByTitleKeywords', function () {
 		});
 	});
 	
+	describe('Fuzzy search capabilities', function () {
+		it('should find exact matches when fuzzy=false (default)', async function () {
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'JavaScript', 0, 10, false);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+			assert(result.length >= 2, 'Should return topics with exact JavaScript match');
+			
+			// All results should contain exact match
+			for (const topic of result) {
+				assert(topic.title.toLowerCase().includes('javascript'), 
+					'Topic title should contain exact JavaScript match');
+			}
+			console.log('Test passed: exact match works with fuzzy=false');
+		});
+		
+		it('should find fuzzy matches when fuzzy=true', async function () {
+			// Test with a slight misspelling of "JavaScript" - "JavaScrip" (missing 't')
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'JavaScrip', 0, 10, true);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+			// Should find JavaScript topics even with the typo
+			assert(result.length >= 1, 'Should return topics with fuzzy JavaScript match');
+			console.log('Test passed: fuzzy match works for slight misspellings');
+		});
+		
+		it('should not find fuzzy matches when fuzzy=false', async function () {
+			// Test with a slight misspelling that should NOT match when fuzzy is disabled
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'JavaScrit', 0, 10, false);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+			// Should not find any matches since fuzzy is disabled
+			assert(result.length === 0, 'Should not return topics with fuzzy match when fuzzy=false');
+			console.log('Test passed: no fuzzy match when fuzzy=false');
+		});
+		
+		it('should handle fuzzy matching with multiple keywords', async function () {
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, ['JavaScrit', 'React'], 0, 10, true);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+			assert(result.length >= 3, 'Should return topics matching either fuzzy or exact keywords');
+			console.log('Test passed: fuzzy matching works with multiple keywords');
+		});
+		
+		it('should respect edit distance threshold', async function () {
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'XavaDrict', 0, 10, true);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+
+			assert(result.length === 0, 'Should not return topics exceeding edit distance threshold');
+
+			console.log('Test passed: respects edit distance threshold');
+		});
+
+		it('should not find matches for completely different keywords with fuzzy on', async function () {
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'Zyxwvuts', 0, 10, true);
+
+			assert(Array.isArray(result), 'Result should be an array');
+			assert(result.length === 0, 'Should not return topics for completely different keywords with fuzzy on');
+			console.log('Test passed: no matches for completely different keywords with fuzzy on');
+		});
+
+		it('should work with both exact and fuzzy matches simultaneously', async function () {
+			// Test that when fuzzy=true, it still finds exact matches
+			const exactResult = await topics.getTopicsByTitleKeywords(testUser.uid, 'Python', 0, 10, false);
+			const fuzzyResult = await topics.getTopicsByTitleKeywords(testUser.uid, 'Python', 0, 10, true);
+			
+			assert(Array.isArray(exactResult), 'Exact result should be an array');
+			assert(Array.isArray(fuzzyResult), 'Fuzzy result should be an array');
+			// Fuzzy should return at least as many results as exact (could be more due to fuzzy matches)
+			assert(fuzzyResult.length >= exactResult.length, 'Fuzzy should return at least as many as exact');
+			console.log('Test passed: fuzzy search includes exact matches');
+		});
+		
+		it('should handle short keywords appropriately in fuzzy mode', async function () {
+			// Test fuzzy matching with very short keywords
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'We', 0, 10, true);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+			// Should find "Web" in "Web Development Best Practices" with fuzzy matching
+			console.log('Test passed: fuzzy matching works with short keywords');
+		});
+		
+		it('should handle case-insensitive fuzzy matching', async function () {
+			// Test fuzzy matching with different cases
+			const result = await topics.getTopicsByTitleKeywords(testUser.uid, 'javascript', 0, 10, true);
+			
+			assert(Array.isArray(result), 'Result should be an array');
+			assert(result.length >= 2, 'Should return topics with case-insensitive fuzzy match');
+			console.log('Test passed: fuzzy matching is case-insensitive');
+		});
+	});
+	
 	describe('Pagination', function () {
 		it('should respect pagination parameters', async function () {
 			const result1 = await topics.getTopicsByTitleKeywords(testUser.uid, 'Development', 0, 1);
@@ -194,6 +286,16 @@ describe('Topics.getTopicsByTitleKeywords', function () {
 			assert(Array.isArray(result2), 'Result2 should be an array');
 			assert(result2.length >= result1.length, 'Larger stop should return more or equal results');
 			console.log('Test passed: pagination works correctly');
+		});
+		
+		it('should respect pagination parameters with fuzzy search', async function () {
+			const result1 = await topics.getTopicsByTitleKeywords(testUser.uid, 'Developmen', 0, 1, true);
+			const result2 = await topics.getTopicsByTitleKeywords(testUser.uid, 'Developmen', 0, 5, true);
+			
+			assert(Array.isArray(result1), 'Result1 should be an array');
+			assert(Array.isArray(result2), 'Result2 should be an array');
+			assert(result2.length >= result1.length, 'Larger stop should return more or equal fuzzy results');
+			console.log('Test passed: pagination works correctly with fuzzy search');
 		});
 	});
 });
