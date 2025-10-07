@@ -330,4 +330,95 @@ Topics.search = async function (tid, term) {
 	return Array.isArray(result) ? result : result.ids;
 };
 
+// Created using Copilot
+function calculateEditDistance(a, b) {
+	if (a.length === 0) return b.length;
+	if (b.length === 0) return a.length;
+
+	const matrix = [];
+
+	for (let i = 0; i <= b.length; i++) {
+		matrix[i] = [i];
+	}
+
+	for (let j = 0; j <= a.length; j++) {
+		matrix[0][j] = j;
+	}
+
+	for (let i = 1; i <= b.length; i++) {
+		for (let j = 1; j <= a.length; j++) {
+			if (b.charAt(i - 1) === a.charAt(j - 1)) {
+				matrix[i][j] = matrix[i - 1][j - 1];
+			} else {
+				matrix[i][j] = Math.min(
+					matrix[i - 1][j - 1] + 1,
+					Math.min(
+						matrix[i][j - 1] + 1,
+						matrix[i - 1][j] + 1,
+					),
+				);
+			}
+		}
+	}
+
+	return matrix[b.length][a.length];
+}
+
+// Created using Clause Sonnet 4
+Topics.getTopicsByTitleKeywords = async function (
+	uid, keywords, start, stop, fuzzy = false, editDistancePercentAllowed = 0.2
+) {
+	if (!keywords) {
+		throw new Error('[[error:invalid-keyword]]');
+	}
+	
+	// Handle both string and array inputs
+	let keywordArray;
+	if (typeof keywords === 'string') {
+		keywordArray = keywords.split(/\s+/).map(k => k.trim()).filter(k => k.length > 0);
+	} else if (Array.isArray(keywords)) {
+		keywordArray = keywords.map(k => String(k).trim()).filter(k => k.length > 0);
+	} else {
+		throw new Error('[[error:invalid-keyword]]');
+	}
+	
+	if (!keywordArray.length) {
+		throw new Error('[[error:invalid-keyword]]');
+	}
+	
+	let tids = await db.getSortedSetRevRange('topics:tid', start, stop);
+	tids = await privileges.topics.filterTids('topics:read', tids, uid);
+	
+	if (!tids.length) {
+		return [];
+	}
+	
+	const topicsData = await Topics.getTopicsFields(tids, ['tid', 'title']);
+	
+	const keywordsLower = keywordArray.map(k => k.toLowerCase());
+	const matchedTids = [];
+
+	for (const topic of topicsData) {
+		if (topic && topic.tid && topic.title) {
+			const title = topic.title.toLowerCase();
+			const fuzzyMatchFunction = (keyword) => {
+				for (let i = 0; i <= title.length - keyword.length; i++) {
+					const substring = title.substring(i, i + keyword.length);
+					if (calculateEditDistance(substring, keyword) <= Math.floor(keyword.length * editDistancePercentAllowed)) {
+						return true;
+					}
+				}
+				return false;
+			};
+			const matchFunction = keyword => title.includes(keyword);
+			if ((fuzzy && keywordsLower.some(fuzzyMatchFunction)) || 
+			(!fuzzy && keywordsLower.some(matchFunction))) {
+				matchedTids.push(topic.tid);
+			}
+		}
+	}
+	
+	return await Topics.getTopicsByTids(matchedTids, uid);
+};
+
 require('../promisify')(Topics);
