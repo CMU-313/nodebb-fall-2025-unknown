@@ -226,17 +226,28 @@ Topics.searchByTitle = async (req, res) => {
 	console.log('=== Topics.searchByTitle CONTROLLER CALLED ===');
 	console.log('Topics.searchByTitle called with:', req.query);
 	try {
-		const { keywords, start = 0, stop = 20 } = req.query;
+		const { keywords, start = 0, stop = 20, fuzzy = 'false' } = req.query;
 		
 		if (!keywords) {
 			console.log('No keywords provided');
 			return helpers.formatApiResponse(400, res, new Error('[[error:invalid-keyword]]'));
 		}
 		
+		// Convert fuzzy parameter to boolean (query params come as strings)
+		const useFuzzySearch = fuzzy === 'true' || fuzzy === true;
+		
 		console.log('Searching for keywords:', keywords);
+		console.log('Using fuzzy search:', useFuzzySearch);
 		
 		// Using acee3 topic filter by title function
-		const results = await topics.getTopicsByTitleKeywords(req.uid, keywords, parseInt(start), parseInt(stop));
+		// Pass the fuzzy parameter to the search function
+		const results = await topics.getTopicsByTitleKeywords(
+			req.uid, 
+			keywords, 
+			parseInt(start), 
+			parseInt(stop),
+			useFuzzySearch
+		);
 		
 		console.log('Search results:', results.length, 'topics found');
 		

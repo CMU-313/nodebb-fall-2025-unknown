@@ -27,6 +27,7 @@ define('topicSearch', [
 		console.log('Search button found:', $('[component="topic/search"]').length);
 		console.log('Search input found:', $('[component="topic/input"]').length);
 		console.log('Clear button found:', $('[component="topic/search/clear"]').length);
+		console.log('Toggle button found:', $('[component="topic/toggle"]').length);
 
 		// Handle search button click - ONLY way to trigger search
 		$('[component="topic/search"]').on('click', function (e) {
@@ -43,6 +44,27 @@ define('topicSearch', [
 			console.log('clear button clicked!');
 			e.preventDefault();
 			TopicSearch.clearSearch();
+		});
+
+		// Handle fuzzy search toggle button click
+		$('[component="topic/toggle"]').on('click', function (e) {
+			console.log('fuzzy toggle button clicked!');
+			e.preventDefault();
+			const toggleButton = $(this);
+			const currentState = toggleButton.attr('data-selected') === 'true';
+			const newState = !currentState;
+			
+			// Update the button's state
+			toggleButton.attr('data-selected', newState.toString());
+			
+			// Visual feedback: toggle button style
+			if (newState) {
+				toggleButton.addClass('btn-primary').removeClass('btn-outline');
+			} else {
+				toggleButton.addClass('btn-outline').removeClass('btn-primary');
+			}
+			
+			console.log('Fuzzy search toggled to:', newState);
 		});
 
 		// No automatic input handling - search only on button click
@@ -66,11 +88,17 @@ define('topicSearch', [
 		// Show loading state
 		$('[component="topic/search"]').prop('disabled', true).find('i').removeClass('fa-search').addClass('fa-spinner fa-spin');
 
+		// Get the fuzzy search toggle status from the button
+		const fuzzyToggleButton = $('[component="topic/toggle"]');
+		const isFuzzyEnabled = fuzzyToggleButton.attr('data-selected') === 'true';
+		console.log('Fuzzy search enabled:', isFuzzyEnabled);
+
 		// Use the fixed Topics.getTopicsByTitleKeywords function
 		api.get('/topics/search-by-title', {
 			keywords: searchTerm,
 			start: 0,
 			stop: 100, // Get more results to filter from
+			fuzzy: isFuzzyEnabled, // Pass the fuzzy toggle status
 		}, function (err, results) {
 			if (err) {
 				console.error('API call error:', err);
