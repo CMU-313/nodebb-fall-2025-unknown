@@ -1,0 +1,66 @@
+# Topic search endpoint - searches topics by title keywords
+# This endpoint is used by the frontend search functionality
+# on unread, recent, and popular topic list pages
+# created by Cursor, general usage and purpose of yaml files
+get:
+  tags:
+    - topics
+  summary: search topics by title keywords
+  description: Search for topics by matching keywords in their titles
+  parameters:
+    # Required search term - can be single word or multiple words
+    - name: keywords
+      in: query
+      required: true
+      description: Keywords to search for in topic titles
+      schema:
+        type: string
+      example: "javascript tutorial"
+    # Pagination parameters for large result sets
+    - name: start
+      in: query
+      required: false
+      description: Starting index for pagination
+      schema:
+        type: integer
+        default: 0
+      example: 0
+    - name: stop
+      in: query
+      required: false
+      description: Ending index for pagination
+      schema:
+        type: integer
+        default: 20
+      example: 20
+    # Fuzzy search parameter - enables approximate matching
+    - name: fuzzy
+      in: query
+      required: false
+      description: Enable fuzzy search for approximate keyword matching
+      schema:
+        type: boolean
+        default: false
+      example: true
+  responses:
+    # Success response - returns array of matching topics
+    '200':
+      description: topics found matching the search criteria
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: ../../components/schemas/Status.yaml#/Status
+              response:
+                type: object
+                properties:
+                  topics:
+                    type: array
+                    items:
+                      $ref: ../../components/schemas/TopicObject.yaml#/TopicObject
+    '400':
+      $ref: ../../components/responses/400.yaml#/400
+    '500':
+      $ref: ../../components/responses/500.yaml#/500

@@ -140,6 +140,8 @@ paths:
     $ref: 'write/categories/cid/follow.yaml'
   /topics/:
     $ref: 'write/topics.yaml'
+  /topics/search-by-title:
+    $ref: 'write/topics/search-by-title.yaml'
   /topics/{tid}:
     $ref: 'write/topics/tid.yaml'
   /topics/{tid}/state:
