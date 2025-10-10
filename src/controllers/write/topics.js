@@ -228,9 +228,9 @@ Topics.searchByTitle = async (req, res) => {
 	try {
 		const { keywords, start = 0, stop = 20, fuzzy = 'false' } = req.query;
 		
-		if (!keywords) {
+		if (!keywords || keywords.trim().length === 0) {
 			console.log('No keywords provided');
-			return helpers.formatApiResponse(400, res, new Error('[[error:invalid-keyword]]'));
+			return await helpers.formatApiResponse(400, res, new Error('[[error:invalid-keyword]]'));
 		}
 		
 		// Convert fuzzy parameter to boolean (query params come as strings)
@@ -251,9 +251,9 @@ Topics.searchByTitle = async (req, res) => {
 		
 		console.log('Search results:', results.length, 'topics found');
 		
-		helpers.formatApiResponse(200, res, { topics: results });
+		await helpers.formatApiResponse(200, res, { topics: results });
 	} catch (error) {
 		console.error('Search error:', error);
-		helpers.formatApiResponse(500, res, error);
+		await helpers.formatApiResponse(500, res, error);
 	}
 };
