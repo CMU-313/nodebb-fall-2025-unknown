@@ -6,241 +6,241 @@ const Posts = require('../src/posts');
 const helpers = require('./helpers');
 
 describe('Filter Feature', () => {
-    describe('Controller Tests', () => {
-        describe('GET /api/filter/posts', () => {
-            it('should return 400 when start date is missing', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?end=2025-10-01');
-                assert.equal(response.statusCode, 400);
-                assert.strictEqual(body.success, false);
-                assert.strictEqual(body.error, 'missing_start_or_end');
-            });
+	describe('Controller Tests', () => {
+		describe('GET /api/filter/posts', () => {
+			it('should return 400 when start date is missing', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?end=2025-10-01');
+				assert.equal(response.statusCode, 400);
+				assert.strictEqual(body.success, false);
+				assert.strictEqual(body.error, 'missing_start_or_end');
+			});
 
-            it('should return 400 when end date is missing', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01');
-                assert.equal(response.statusCode, 400);
-                assert.strictEqual(body.success, false);
-                assert.strictEqual(body.error, 'missing_start_or_end');
-            });
+			it('should return 400 when end date is missing', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01');
+				assert.equal(response.statusCode, 400);
+				assert.strictEqual(body.success, false);
+				assert.strictEqual(body.error, 'missing_start_or_end');
+			});
 
-            it('should return 400 when start date format is invalid', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=invalid-date&end=2025-10-01');
-                assert.equal(response.statusCode, 400);
-                assert.strictEqual(body.success, false);
-                assert.strictEqual(body.error, 'invalid_date');
-            });
+			it('should return 400 when start date format is invalid', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=invalid-date&end=2025-10-01');
+				assert.equal(response.statusCode, 400);
+				assert.strictEqual(body.success, false);
+				assert.strictEqual(body.error, 'invalid_date');
+			});
 
-            it('should return 400 when end date format is invalid', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=invalid-date');
-                assert.equal(response.statusCode, 400);
-                assert.strictEqual(body.success, false);
-                assert.strictEqual(body.error, 'invalid_date');
-            });
+			it('should return 400 when end date format is invalid', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=invalid-date');
+				assert.equal(response.statusCode, 400);
+				assert.strictEqual(body.success, false);
+				assert.strictEqual(body.error, 'invalid_date');
+			});
 
-            it('should return posts within date range', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should return posts within date range', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle empty results gracefully', async () => {
-                const futureDate = new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
-                const futureDateEnd = new Date(Date.now() + (31 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
-                
-                const { response, body } = await helpers.request('get', `/api/filter/posts?start=${futureDate}&end=${futureDateEnd}`);
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-                assert.strictEqual(body.posts.length, 0);
-            });
+			it('should handle empty results gracefully', async () => {
+				const futureDate = new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+				const futureDateEnd = new Date(Date.now() + (31 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+				
+				const { response, body } = await helpers.request('get', `/api/filter/posts?start=${futureDate}&end=${futureDateEnd}`);
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+				assert.strictEqual(body.posts.length, 0);
+			});
 
-            it('should handle offset parameter correctly', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=10');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should handle offset parameter correctly', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=10');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle limit parameter correctly', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=5');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should handle limit parameter correctly', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=5');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should cap limit at 200', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=500');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should cap limit at 200', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=500');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle non-numeric offset gracefully', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=invalid');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should handle non-numeric offset gracefully', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=invalid');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle non-numeric limit gracefully', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=invalid');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should handle non-numeric limit gracefully', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=invalid');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle cid parameter when provided', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&cid=1');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should handle cid parameter when provided', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&cid=1');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle negative cid parameter', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&cid=-1');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
+			it('should handle negative cid parameter', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&cid=-1');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
 
-            it('should handle invalid cid parameter', async () => {
-                const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&cid=invalid');
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
-        });
-    });
+			it('should handle invalid cid parameter', async () => {
+				const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&cid=invalid');
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
+		});
+	});
 
-    describe('Posts Service Tests', () => {
-        it('should accept Date objects', async () => {
-            const startDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000));
-            const endDate = new Date();
-            
-            const posts = await Posts.getPostsByTimeRange(1, startDate, endDate, 0, 10, -1);
-            assert(Array.isArray(posts));
-        });
+	describe('Posts Service Tests', () => {
+		it('should accept Date objects', async () => {
+			const startDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000));
+			const endDate = new Date();
+			
+			const posts = await Posts.getPostsByTimeRange(1, startDate, endDate, 0, 10, -1);
+			assert(Array.isArray(posts));
+		});
 
-        it('should return empty array when no posts in range', async () => {
-            const futureTime = Date.now() + (7 * 24 * 60 * 60 * 1000);
-            const laterFutureTime = Date.now() + (14 * 24 * 60 * 60 * 1000);
-            
-            const posts = await Posts.getPostsByTimeRange(1, futureTime, laterFutureTime, 0, 10, -1);
-            
-            assert(Array.isArray(posts));
-            assert.strictEqual(posts.length, 0);
-        });
+		it('should return empty array when no posts in range', async () => {
+			const futureTime = Date.now() + (7 * 24 * 60 * 60 * 1000);
+			const laterFutureTime = Date.now() + (14 * 24 * 60 * 60 * 1000);
+			
+			const posts = await Posts.getPostsByTimeRange(1, futureTime, laterFutureTime, 0, 10, -1);
+			
+			assert(Array.isArray(posts));
+			assert.strictEqual(posts.length, 0);
+		});
 
-        it('should accept timestamp numbers', async () => {
-            const startTime = Date.now() - (7 * 24 * 60 * 60 * 1000);
-            const endTime = Date.now();
-            
-            const posts = await Posts.getPostsByTimeRange(1, startTime, endTime, 0, 10, -1);
-            assert(Array.isArray(posts));
-        });
+		it('should accept timestamp numbers', async () => {
+			const startTime = Date.now() - (7 * 24 * 60 * 60 * 1000);
+			const endTime = Date.now();
+			
+			const posts = await Posts.getPostsByTimeRange(1, startTime, endTime, 0, 10, -1);
+			assert(Array.isArray(posts));
+		});
 
-        it('should accept ISO date strings', async () => {
-            const startDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString();
-            const endDate = new Date().toISOString();
-            
-            const posts = await Posts.getPostsByTimeRange(1, startDate, endDate, 0, 10, -1);
-            assert(Array.isArray(posts));
-        });
+		it('should accept ISO date strings', async () => {
+			const startDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString();
+			const endDate = new Date().toISOString();
+			
+			const posts = await Posts.getPostsByTimeRange(1, startDate, endDate, 0, 10, -1);
+			assert(Array.isArray(posts));
+		});
 
-        it('should handle very large time ranges', async () => {
-            const veryOldTime = new Date('1970-01-01').getTime();
-            const futureTime = new Date('2050-01-01').getTime();
-            
-            const posts = await Posts.getPostsByTimeRange(1, veryOldTime, futureTime, 0, 10, -1);
-            assert(Array.isArray(posts));
-        });
+		it('should handle very large time ranges', async () => {
+			const veryOldTime = new Date('1970-01-01').getTime();
+			const futureTime = new Date('2050-01-01').getTime();
+			
+			const posts = await Posts.getPostsByTimeRange(1, veryOldTime, futureTime, 0, 10, -1);
+			assert(Array.isArray(posts));
+		});
 
-        it('should handle different user IDs', async () => {
-            const startTime = Date.now() - (7 * 24 * 60 * 60 * 1000);
-            const endTime = Date.now();
-            
-            const adminPosts = await Posts.getPostsByTimeRange(1, startTime, endTime, 0, 10, -1);
-            const guestPosts = await Posts.getPostsByTimeRange(0, startTime, endTime, 0, 10, -1);
-            
-            assert(Array.isArray(adminPosts));
-            assert(Array.isArray(guestPosts));
-        });
-    });
+		it('should handle different user IDs', async () => {
+			const startTime = Date.now() - (7 * 24 * 60 * 60 * 1000);
+			const endTime = Date.now();
+			
+			const adminPosts = await Posts.getPostsByTimeRange(1, startTime, endTime, 0, 10, -1);
+			const guestPosts = await Posts.getPostsByTimeRange(0, startTime, endTime, 0, 10, -1);
+			
+			assert(Array.isArray(adminPosts));
+			assert(Array.isArray(guestPosts));
+		});
+	});
 
-    describe('Integration Tests', () => {
-        it('should serve filter page', async () => {
-            const { response, body } = await helpers.request('get', '/filter');
-            assert.equal(response.statusCode, 200);
-            assert(body.includes('Filter') || (typeof body === 'string' && body.includes('Filter')));
-        });
+	describe('Integration Tests', () => {
+		it('should serve filter page', async () => {
+			const { response, body } = await helpers.request('get', '/filter');
+			assert.equal(response.statusCode, 200);
+			assert(body.includes('Filter') || (typeof body === 'string' && body.includes('Filter')));
+		});
 
-        it('should handle full workflow with all parameters', async () => {
-            const startDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
-            const endDate = new Date().toISOString().split('T')[0];
+		it('should handle full workflow with all parameters', async () => {
+			const startDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+			const endDate = new Date().toISOString().split('T')[0];
 
-            const { response, body } = await helpers.request('get', `/api/filter/posts?start=${startDate}&end=${endDate}&offset=0&limit=10&cid=1`);
-            assert.equal(response.statusCode, 200);
-            assert.strictEqual(body.success, true);
-            assert(Array.isArray(body.posts));
-        });
+			const { response, body } = await helpers.request('get', `/api/filter/posts?start=${startDate}&end=${endDate}&offset=0&limit=10&cid=1`);
+			assert.equal(response.statusCode, 200);
+			assert.strictEqual(body.success, true);
+			assert(Array.isArray(body.posts));
+		});
 
-        it('should return consistent response structure', async () => {
-            const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01');
-            assert.equal(response.statusCode, 200);
-            assert.strictEqual(typeof body, 'object');
-            assert.strictEqual(typeof body.success, 'boolean');
-            assert(Array.isArray(body.posts));
-        });
+		it('should return consistent response structure', async () => {
+			const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01');
+			assert.equal(response.statusCode, 200);
+			assert.strictEqual(typeof body, 'object');
+			assert.strictEqual(typeof body.success, 'boolean');
+			assert(Array.isArray(body.posts));
+		});
 
-        it('should handle malformed query parameters gracefully', async () => {
-            const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=abc&limit=xyz');
-            assert.equal(response.statusCode, 200);
-            assert.strictEqual(body.success, true);
-            assert(Array.isArray(body.posts));
-        });
+		it('should handle malformed query parameters gracefully', async () => {
+			const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=abc&limit=xyz');
+			assert.equal(response.statusCode, 200);
+			assert.strictEqual(body.success, true);
+			assert(Array.isArray(body.posts));
+		});
 
-        it('should serve filter page with correct content type', async () => {
-            const { response } = await helpers.request('get', '/filter');
-            assert.equal(response.statusCode, 200);
-            assert(response.headers['content-type'].includes('text/html'));
-        });
-    });
+		it('should serve filter page with correct content type', async () => {
+			const { response } = await helpers.request('get', '/filter');
+			assert.equal(response.statusCode, 200);
+			assert(response.headers['content-type'].includes('text/html'));
+		});
+	});
 
-    describe('Edge Cases and Performance', () => {
-        it('should handle very narrow time windows', async () => {
-            const now = Date.now();
-            const oneSecondLater = now + 1000;
-            
-            const posts = await Posts.getPostsByTimeRange(1, now, oneSecondLater, 0, 10, -1);
-            assert(Array.isArray(posts));
-        });
+	describe('Edge Cases and Performance', () => {
+		it('should handle very narrow time windows', async () => {
+			const now = Date.now();
+			const oneSecondLater = now + 1000;
+			
+			const posts = await Posts.getPostsByTimeRange(1, now, oneSecondLater, 0, 10, -1);
+			assert(Array.isArray(posts));
+		});
 
-        it('should handle maximum limit boundary', async () => {
-            const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=200');
-            assert.equal(response.statusCode, 200);
-            assert.strictEqual(body.success, true);
-            assert(Array.isArray(body.posts));
-        });
+		it('should handle maximum limit boundary', async () => {
+			const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&limit=200');
+			assert.equal(response.statusCode, 200);
+			assert.strictEqual(body.success, true);
+			assert(Array.isArray(body.posts));
+		});
 
-        it('should handle large offset values', async () => {
-            const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=1000');
-            assert.equal(response.statusCode, 200);
-            assert.strictEqual(body.success, true);
-            assert(Array.isArray(body.posts));
-        });
+		it('should handle large offset values', async () => {
+			const { response, body } = await helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01&offset=1000');
+			assert.equal(response.statusCode, 200);
+			assert.strictEqual(body.success, true);
+			assert(Array.isArray(body.posts));
+		});
 
-        it('should handle concurrent requests', async () => {
-            const requests = Array(5).fill().map(() => 
-                helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01')
-            );
-            
-            const responses = await Promise.all(requests);
-            
-            responses.forEach(({ response, body }) => {
-                assert.equal(response.statusCode, 200);
-                assert.strictEqual(body.success, true);
-                assert(Array.isArray(body.posts));
-            });
-        });
-    });
+		it('should handle concurrent requests', async () => {
+			const requests = Array(5).fill().map(() => 
+				helpers.request('get', '/api/filter/posts?start=2025-09-01&end=2025-10-01')
+			);
+			
+			const responses = await Promise.all(requests);
+			
+			responses.forEach(({ response, body }) => {
+				assert.equal(response.statusCode, 200);
+				assert.strictEqual(body.success, true);
+				assert(Array.isArray(body.posts));
+			});
+		});
+	});
 });
