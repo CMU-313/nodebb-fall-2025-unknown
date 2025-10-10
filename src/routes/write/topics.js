@@ -13,6 +13,10 @@ module.exports = function () {
 	const multipart = require('connect-multiparty');
 	const multipartMiddleware = multipart();
 
+	// creating API route to go to search-by-title function
+	console.log('Setting up topics search-by-title route');
+	setupApiRoute(router, 'get', '/search-by-title', [], controllers.write.topics.searchByTitle);
+
 	setupApiRoute(router, 'post', '/', [middleware.checkRequired.bind(null, ['cid', 'title', 'content'])], controllers.write.topics.create);
 	setupApiRoute(router, 'get', '/:tid', [], controllers.write.topics.get);
 	setupApiRoute(router, 'post', '/:tid', [middleware.checkRequired.bind(null, ['content']), middleware.assert.topic], controllers.write.topics.reply);

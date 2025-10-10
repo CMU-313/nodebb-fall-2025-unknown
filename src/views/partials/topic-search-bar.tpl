@@ -16,7 +16,7 @@
 		class="btn btn-outline" 
 		type="button" 
 		component="topic/toggle" 
-		data-selected="{toggleSelected}">
+		data-selected="false">
 		Fuzzy Search
 	</button>
 	</div>
