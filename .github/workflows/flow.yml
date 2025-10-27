@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: cp install/package.json package.json
+      - run: cp install/package_flow.json package_flow.json
 
       - name: Install Node
         uses: actions/setup-node@v4
