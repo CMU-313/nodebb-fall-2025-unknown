@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 module.exports = {
 	post: async function (req, res) {
@@ -13,7 +13,7 @@ module.exports = {
 			'Hola mundo': 'Hello world',
 			'¿Cómo estás?': 'How are you?',
 			'Buenos días': 'Good morning',
-			'Gracias por tu ayuda': 'Thank you for your help'
+			'Gracias por tu ayuda': 'Thank you for your help',
 		};
 
 	
