@@ -70,6 +70,12 @@ function modifyPost(post, fields) {
 		if (post.hasOwnProperty('edited')) {
 			post.editedISO = post.edited !== 0 ? utils.toISOString(post.edited) : '';
 		}
+		// Mark post as "English" if decided by translator service or if it has no info
+		post.isEnglish = post.isEnglish == 'true' || post.isEnglish === undefined;
+		// If translatedContent is undefined, default to empty string (no translation needed for English posts)
+		if (post.translatedContent === undefined) {
+			post.translatedContent = '';
+		}
 		if (!fields.length || fields.includes('attachments')) {
 			post.attachments = (post.attachments || '').split(',').filter(Boolean);
 		}

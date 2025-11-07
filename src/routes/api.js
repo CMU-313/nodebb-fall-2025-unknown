@@ -34,6 +34,8 @@ module.exports = function (app, middleware, controllers) {
 	];
 
 	router.post('/post/upload', postMiddlewares, helpers.tryRoute(uploadsController.uploadPost));
+
+	
 	router.post('/user/:userslug/uploadpicture', [
 		...middlewares,
 		...postMiddlewares,
