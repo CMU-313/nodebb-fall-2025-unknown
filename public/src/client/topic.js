@@ -87,61 +87,10 @@ define('forum/topic', [
 			var isVisible = $(this).closest('.sensitive-content-message').next('.translated-content').is(':visible');
 			if (isVisible) {
 				$(this).text('Hide the translated message.');
-				const contentEl = $(this).closest('.content');
-				let spanishText = '';
-				if (contentEl.length) {
-					spanishText = contentEl.clone()
-						.children('.sensitive-content-message, .translated-content').remove().end()
-						.text().trim();
-				}
-
-				if (!spanishText) {
-					console.warn('translate: original content empty. Falling back to nearby text.');
-					spanishText = $(this).closest('.sensitive-content-message').prev().text().trim() || '';
-				}
-
-				translateToEnglish(spanishText).then(translatedText => {
-					$(this).closest('.sensitive-content-message').next('.translated-content').text(translatedText);
-				}).catch(error => {
-					console.error('Translation error:', error);
-					$(this).closest('.sensitive-content-message').next('.translated-content').text('Translation failed.');
-				});
 			} else {
 				$(this).text('Click here to view the translated message.');
 			}
 		});
-	}
-
-	async function translateToEnglish(text) {
-		if (!text) {
-			return Promise.resolve('');
-		}
-
-		try {
-			const base = window.location.origin + (config.relative_path || '');
-			const url = base + '/api/post/translate/mock';
-			const resp = await fetch(url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8',
-				},
-				body: JSON.stringify({ text: String(text), lang: 'en' }),
-			});
-
-			if (!resp.ok) {
-				const body = await resp.text();
-				throw new Error(body || resp.statusText);
-			}
-
-			const json = await resp.json();
-			if (json && json.translation && typeof json.translation.text === 'string') {
-				return String(json.translation.text);
-			}
-			return text;
-		} catch (err) {
-			console.warn('translateToEnglish: translation request failed', err);
-			return text;
-		}
 	}
 
 
