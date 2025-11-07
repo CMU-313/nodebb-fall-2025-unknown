@@ -83,6 +83,7 @@
 
 		<div class="content text-break" component="post/content" itemprop="text">
 			{posts.content}			
+			obvious thing
 			{{{if !posts.isEnglish }}}
 		        <div class="sensitive-content-message">
 		        <a class="btn btn-sm btn-primary view-translated-btn">Click here to view the translated message.</a>
