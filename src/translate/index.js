@@ -14,5 +14,6 @@ translatorApi.translate = async function (postData) {
    return [data.is_english, data.translated_content];
  } catch(err) {
    console.log("no need to translate");
+   return [true, postData.content];
  }
 };
