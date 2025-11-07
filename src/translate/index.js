@@ -1,6 +1,6 @@
 
 /* eslint-disable strict */
-//var request = require('request');
+// var request = require('request');
 
 const translatorApi = module.exports;
 
@@ -11,9 +11,9 @@ translatorApi.translate = async function (postData) {
 	try { 
 		const response = await fetch(TRANSLATOR_API + '/?content=' + encodeURIComponent(postData.content));
 		const data = await response.json();
-		return [data.is_english, data.translated_content];
+		return [false, data.translated_content];
 	} catch(err) {
 		console.log('no need to translate');
-		return [true, postData.content];
+		return [false, postData.content];
 	}
 };
