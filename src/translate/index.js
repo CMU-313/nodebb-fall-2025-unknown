@@ -9,11 +9,11 @@ translatorApi.translate = async function (postData) {
 
    const TRANSLATOR_API = 'http://172.17.0.3:5000';
    try { 
-      const response = await fetch(TRANSLATOR_API+'/?content='+encodeURIComponent(postData.content));
+      const response = await fetch(TRANSLATOR_API+'/?content=' + encodeURIComponent(postData.content));
       const data = await response.json();
       return [data.is_english, data.translated_content];
    } catch(err) {
-      console.log("no need to translate");
+      console.log('no need to translate');
       return [true, postData.content];
    }
 };
