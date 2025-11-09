@@ -22,7 +22,6 @@ provision.sh
 feeds/recent.rss
 .eslintcache
 .svn
-src/cli/index.js
 
 logs/
 
