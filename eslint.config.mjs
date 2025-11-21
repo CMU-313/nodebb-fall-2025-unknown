@@ -27,6 +27,7 @@ export default defineConfig([
 			'coverage/',
 			'build/',
 			'test/files/',
+			'test/k6',
 			'*.min.js',
 			'install/docker/',
 		],
